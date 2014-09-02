@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+import glob
+import MySQLdb
+dir1=glob.glob('/media/1A9C05C89C059EFF/Program Files/MATLAB/R2010b/bin/point/*')
+dir1.sort()
+conn = MySQLdb.connect(host='localhost',user='root',passwd='911119')
+cur = conn.cursor()
+cur.execute("DROP DATABASE IF EXISTS pointdata")
+cur.execute("CREATE DATABASE pointdata")
+conn.select_db('pointdata')
+cur.execute("create table data(id int)")
+for x in range(0,96):
+	cur.execute("insert into data(id) values(%s)",x)
+for j in range(0,120):
+	m='ssi'
+	y=str(j)
+	m=m+y
+	print j
+	dir2=glob.glob(dir1[j]+'/*.txt')
+	dir2.sort()
+	cur.execute("ALTER TABLE data add "+m+" int")
+	for k in range(0,96):
+		file=open(dir2[k])
+		lines=file.readlines()
+		array=range(0,50)
+		for i in range(0,50):
+			a=lines[i]
+			array[i]=int(a[30:32])
+		file.close()
+		res = {}
+		for i in array:
+			res[i] = res.get(i, 0) + 1
+			b=(res.values()).index(max(res.values()))
+		z=str((res.keys()[b]))
+		cur.execute("update data set  "+m+" = %s where id=%s",(z,k))
+		conn.commit()
