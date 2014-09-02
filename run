@@ -1,0 +1,54 @@
+#!/usr/bin/python
+import glob
+import MySQLdb
+dir1=glob.glob('/media/1A9C05C89C059EFF/Program Files/MATLAB/R2010b/bin/t08.0.3.0/*.txt')
+dir1.sort()
+conn = MySQLdb.connect(host='localhost',user='root',passwd='911119')
+cur = conn.cursor()
+cur.execute("DROP DATABASE IF EXISTS TESTDATA")
+cur.execute("CREATE DATABASE TESTDATA")
+conn.select_db('TESTDATA')
+cur.execute("create table test(id int,ssi int)")
+consine=range(0,120)
+for k in range(0,96):
+	file=open(dir1[k])
+	lines=file.readlines()
+	array=range(0,50)
+	for i in range(0,50):
+		a=lines[i]
+		array[i]=int(a[30:32])
+	file.close()
+	res = {}
+	for i in array:
+		res[i] = res.get(i, 0) + 1
+		b=(res.values()).index(max(res.values()))
+	z=str((res.keys()[b]))
+	cur.execute("insert into test(id,ssi) values(%s,%s)",(k,z))
+	conn.commit()
+for times1 in range(0,120):
+	ROW_1='ssi'
+	ROW_2=str(times1)
+	ROW=ROW_1+ROW_2
+	summ=0
+	for times2 in range(0,96):
+		simi=0
+		conn.select_db('pointdata')
+		cur.execute("select "+ROW+" from data where id=(%s)",times2)
+		integer1=cur.fetchall()
+		integer1=float(integer1[0][0])
+		conn.select_db('TESTDATA')
+		cur.execute("select ssi from test where id=(%s)",times2)
+		integer2=cur.fetchall()
+		integer2=float(integer2[0][0])
+		simi=(integer1*integer2)/(integer1**2+integer2**2-integer1*integer2)
+		summ=summ+simi
+	consine[times1]=summ
+local=consine.index(max(consine))
+dir3=glob.glob('/media/1A9C05C89C059EFF/Program Files/MATLAB/R2010b/bin/point/*')
+dir3.sort()
+location=dir3[local]
+length=len(location)
+str1=location[length-4:length-2]
+str2=location[length-1]
+print (str1+','+str2)
+

@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+import os
+import glob
+database_judge=os.path.exists("/home/database.txt")
+if database_judge:
+	os.remove("/home/database.txt")
+database_file=open('/home/database.txt','w+')
+dir1=glob.glob('/media/1A9C05C89C059EFF/Program Files/MATLAB/R2010b/bin/point/*')
+dir1.sort()
+for j in range(0,120):
+	dir2=glob.glob(dir1[j]+'/*.txt')
+	dir2.sort()
+	for k in range(0,96):
+		file=open(dir2[k])
+		lines=file.readlines()
+		array=range(0,50)
+		for i in range(0,50):
+			a=lines[i]
+			db=a.find('dB')
+			array[i]=int(a[db-2:db])
+		file.close()
+		res = {}
+		for i in array:
+			res[i] = res.get(i, 0) + 1
+			b=(res.values()).index(max(res.values()))
+		z=str((res.keys()[b]))
+		linefeed=''
+		if k==95:
+			linefeed=linefeed+'\n'
+		z=z+linefeed
+		database_file.write(z)

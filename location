@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+import os
+import glob
+dir1=glob.glob('/media/1A9C05C89C059EFF/Program Files/MATLAB/R2010b/bin/t08.0.3.0/*.txt')
+dir1.sort()
+testdata_judge=os.path.exists('/home/testdata.txt')
+if testdata_judge:
+	os.remove('/home/testdata.txt')
+testdata_file=open('/home/testdata.txt','w+')
+consine=range(0,120)
+for k in range(0,96):
+	file=open(dir1[k])
+	lines=file.readlines()
+	array=range(0,50)
+	for i in range(0,50):
+		a=lines[i]
+		db=a.find('dB')
+		array[i]=int(a[db-2:db])
+	file.close()
+	res = {}
+	for i in array:
+		res[i] = res.get(i, 0) + 1
+		b=(res.values()).index(max(res.values()))
+	z=str((res.keys()[b]))
+	linefeed=''
+	if k==95:
+		linefeed=linefeed+'\n'
+	z=z+linefeed
+	testdata_file.write(z)
+testdata_file=open('/home/testdata.txt','r')
+testdatalines=testdata_file.readlines()
+database_file=open('/home/database.txt','r')
+databaselines=database_file.readlines()
+for times1 in range(0,120):
+	summ=0
+	data=databaselines[times1]
+	for times2 in range(0,96):
+		integer1=float(data[2*times2:2*times2+2])
+		integer2=float(testdatalines[0][2*times2:2*times2+2])
+		simi=(integer1*integer2)/(integer1**2+integer2**2-integer1*integer2)
+		summ=summ+simi
+	consine[times1]=summ
+local=consine.index(max(consine))
+dir3=glob.glob('/media/1A9C05C89C059EFF/Program Files/MATLAB/R2010b/bin/point/*')
+dir3.sort()
+location=dir3[local]
+length=len(location)
+str1=location[length-4:length-2]
+str2=location[length-1]
+print (str1+','+str2)
+
+
